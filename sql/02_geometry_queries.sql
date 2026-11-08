@@ -12,7 +12,9 @@
 -- Note: Units will be in square meters (CRS is UTM Zone 18N, EPSG:26918)
 
 -- TODO: Write your query below
-
+SELECT St_Area(geom) AS new_brighton_area_sq_m
+FROM nyc_neighborhoods
+WHERE name = 'New Brighton';
 
 
 
@@ -29,7 +31,9 @@
 
 -- TODO: Write your query below
 
-
+SELECT ST_Area(ST_Union(geom)) / 4046.86 AS bronx_area_acres
+FROM nyc_neighborhoods
+WHERE boroname = 'The Bronx';
 
 
 -- Exercise 3: How many census blocks in New York City DO NOT have a hole in them?
@@ -44,9 +48,9 @@
 -- Hint: ST_NumInteriorRings(geom) = 0 means no holes (interior rings)
 
 -- TODO: Write your query below
-
-
-
+SELECT COUNT(*) AS no_hole_polygons
+FROM nyc_census_blocks
+WHERE ST_NumInteriorRings(geom) = 0;
 
 -- Exercise 4: What is the total length of streets (in miles) in New York City?
 -- Expected output: one row with total street length in miles
@@ -60,9 +64,8 @@
 -- Hint: Use the nyc_streets table
 
 -- TODO: Write your query below
-
-
-
+SELECT SUM(ST_Length(geom)) / 1609.34 AS total_length_miles
+FROM nyc_streets;
 
 -- Exercise 5: How long is '5th Ave' in meters?
 -- Expected output: one row with the length of 5th Ave
@@ -77,7 +80,9 @@
 
 -- TODO: Write your query below
 
-
+SELECT SUM(ST_Length(geom)) AS fifth_ave_length
+FROM nyc_streets
+WHERE name = '5th Ave';
 
 
 -- Exercise 6: What is the JSON representation of the boundary of 'Soho'?
@@ -92,7 +97,9 @@
 
 -- TODO: Write your query below
 
-
+SELECT ST_AsGeoJSON(geom) AS soho_geojson
+FROM nyc_neighborhoods
+WHERE name = 'Soho';
 
 
 -- Exercise 7: How many polygons are in the 'Coney Island' multipolygon?
@@ -101,6 +108,11 @@
 -- 4
 
 -- TODO: Write a SELECT statement to count geometries in 'Coney Island'
+
+SELECT ST_NumGeometries(geom) AS num_coney_island_polygons
+FROM nyc_neighborhoods
+WHERE name = 'Coney Island';
+
 -- Hint: Use ST_NumGeometries() on the geom column 
 -- Hint: Use num_coney_island_polygons as the output alias
 -- Hint: Use the nyc_neighborhoods table
@@ -123,6 +135,11 @@
 -- Hint: Use the nyc_streets table
 -- Hint: ORDER BY ST_Length(geom) DESC OR use the alias length_meters
 -- Hint: Use LIMIT 5
+
+SELECT name, ST_Length(geom) AS length_meters
+FROM nyc_streets
+ORDER BY length_meters DESC
+LIMIT 5;
 
 
 

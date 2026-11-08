@@ -17,6 +17,12 @@
 
 -- TODO: Write your query below
 
+SELECT ss.name, ss.routes
+FROM nyc_subway_stations AS ss
+JOIN nyc_neighborhoods AS n
+ON ST_Intersects(ss.geom, n.geom)
+WHERE n.name = 'East Village';
+
 
 
 
@@ -40,6 +46,12 @@
 
 -- TODO: Write your query below
 
+SELECT DISTINCT n.name AS neighborhood_name
+FROM nyc_subway_stations AS ss
+JOIN nyc_neighborhoods AS n
+ON ST_Intersects(ss.geom, n.geom)
+WHERE ss.routes LIKE '%7%';
+
 
 
 
@@ -56,8 +68,11 @@
 
 -- TODO: Write your query below
 
-
-
+SELECT SUM(cb.popn_total) AS total_population
+FROM nyc_census_blocks AS cb
+JOIN nyc_neighborhoods AS n
+ON ST_Intersects(cb.geom, n.geom)
+WHERE n.name = 'Financial District';
 
 
 -- Exercise 4: What are the population densities (people / km^2) of the 'East Village' and 'West Village'?
@@ -75,6 +90,16 @@
 -- Hint: GROUP BY n.name, n.geom
 
 -- TODO: Write your query below
+
+SELECT
+    n.name,
+    SUM(cb.popn_total) / (ST_Area(n.geom) / 1000000.0)
+        AS population_density_per_sqkm
+FROM nyc_census_blocks AS cb
+JOIN nyc_neighborhoods AS n
+ON ST_Intersects(cb.geom, n.geom)
+WHERE n.name IN ('East Village', 'West Village')
+GROUP BY n.name, n.geom;
 
 
 
